@@ -1,12 +1,22 @@
 <template>
   <div class="hello">
-    <h2>Transaction number : {{ transaction_nb }}</h2>
-    <h2>Time left : {{ Math.floor(time_left/60) }} min and {{ time_left%60 }} seconds</h2> 
-    <qrcode-vue :value=wallet_address :size="200" level="H" />
-    <h2>Wallet address : {{ wallet_address }}</h2>
-    <h2>Currency : {{ currency }}</h2>
-    <h2>Amount to send : {{ amount_to_send }}</h2>
-    <h2>Amount received : {{ amount_received }}</h2>
+    <info-transaction v-if="transaction_nb != null && status=='pending'">
+      <h2>Transaction number : {{ transaction_nb }}</h2>
+      <h2 v-if="data.time_left != null">Time left : {{data.time_left}}</h2> 
+      <qrcode-vue :value=data.public_key :size="200" level="H" v-if="data.public_key != null"/>
+      <h2 v-if="data.public_key != null">Wallet address : {{ data.public_key }}</h2>
+      <h2 v-if="data.currency != null">Currency : {{ data.currency }}</h2>
+      <h2 v-if="data.amount != null">Amount to send : {{ data.amount }}</h2>
+      <h2 v-if="data.amount_to_pay != null">Amount still to pay : {{ data.amount_to_pay }}</h2>
+      <h1 v-if="data.public_key == null">Error : {{ data.payment_status }}</h1>
+    </info-transaction>
+    <transaction-complete v-if="status == 'success'"><h1>Payment successfull</h1></transaction-complete>
+    <transaction-failed v-if="status == 'failed'"><h1>Payment failed, elapsed time</h1></transaction-failed>
+    <enter-transaction-nb v-if="transaction_nb == null">
+      <h1>Please enter a transaction number :</h1>
+      <input v-model="enter_transaction_nb" placeholder="example : 262256">
+      <button v-on:click="this.transaction_nb = enter_transaction_nb;">Pay</button>
+    </enter-transaction-nb>
   </div>
 </template>
 
@@ -19,22 +29,33 @@ export default {
   },
   data(){
     return{
-      transaction_nb: 26251,
+      status: "pending",
+      transaction_nb: null,
       time_left: 3600,
-      wallet_address: "SkdJ86sj5jH2az90mn6v2",
+      wallet_address: "7276asajk7327",
       currency: "SOL",
       amount_to_send: 0.5,
       amount_received: 0,
+      data: null
     }
   },
   components: {
       QrcodeVue,
   },
   mounted: function () {
+    this.transaction_nb = this.$route.query.transaction;
     window.setInterval(() => {
       this.time_left -= 1;
+      if (this.transaction_nb != null)
+      {
+        fetch("http://localhost:3000/api/monitoring?ordernb="+this.transaction_nb)
+        .then(response => response.json())
+        .then(data => (this.data = data));
+
+      }
     }, 1000)
   }
+
 }
 </script>
 
