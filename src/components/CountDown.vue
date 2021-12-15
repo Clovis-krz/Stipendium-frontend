@@ -2,13 +2,13 @@
   <div class="hello">
     <info-transaction v-if="transaction_nb != null && status=='pending'">
       <h2>Transaction number : {{ transaction_nb }}</h2>
-      <h2 v-if="data.time_left != null">Time left : {{data.time_left}}</h2> 
+      <h2 v-if="data.expiration != null">Time left : {{ Math.floor((data.expiration - Math.floor(Date.now()/1000))/60) +" min "+ Math.floor(data.expiration - Math.floor(Date.now()/1000))%60 + " sec"}}</h2> 
       <qrcode-vue :value=data.public_key :size="200" level="H" v-if="data.public_key != null"/>
       <h2 v-if="data.public_key != null">Wallet address : {{ data.public_key }}</h2>
       <h2 v-if="data.currency != null">Currency : {{ data.currency }}</h2>
-      <h2 v-if="data.amount != null">Amount to send : {{ data.amount }}</h2>
+      <h2 v-if="data.amount_total != null">Amount to send : {{ data.amount_total }}</h2>
       <h2 v-if="data.amount_to_pay != null">Amount still to pay : {{ data.amount_to_pay }}</h2>
-      <h1 v-if="data.public_key == null">Error : {{ data.payment_status }}</h1>
+      <h1 v-if="data.public_key == null">{{ data.payment_status }}</h1>
     </info-transaction>
     <transaction-complete v-if="status == 'success'"><h1>Payment successfull</h1></transaction-complete>
     <transaction-failed v-if="status == 'failed'"><h1>Payment failed, elapsed time</h1></transaction-failed>
