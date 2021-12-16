@@ -1,5 +1,6 @@
 <template>
   <div class="hello">
+
     <info-transaction v-if="transaction_nb != null && status=='pending'">
       <h2>Transaction number : {{ transaction_nb }}</h2>
       <h2 v-if="data.expiration != null">Time left : {{ min_time +" min "+ sec_time + " sec"}}</h2> 
@@ -10,13 +11,17 @@
       <h2 v-if="data.amount_to_pay != null">Amount still to pay : {{ data.amount_to_pay }}</h2>
       <h1 v-if="data.public_key == null">{{ data.payment_status }}</h1>
     </info-transaction>
+
     <transaction-complete v-if="status == 'success'"><h1>Payment successfull</h1></transaction-complete>
+
     <transaction-failed v-if="status == 'failed'"><h1>Payment failed, elapsed time</h1></transaction-failed>
+
     <enter-transaction-nb v-if="transaction_nb == null">
       <h1>Please enter a transaction number :</h1>
       <input v-model="enter_transaction_nb" placeholder="example : 262256">
       <button v-on:click="this.transaction_nb = enter_transaction_nb;">Pay</button>
     </enter-transaction-nb>
+    
   </div>
 </template>
 
