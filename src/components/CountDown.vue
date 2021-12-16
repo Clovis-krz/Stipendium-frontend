@@ -2,7 +2,7 @@
   <div class="hello">
     <info-transaction v-if="transaction_nb != null && status=='pending'">
       <h2>Transaction number : {{ transaction_nb }}</h2>
-      <h2 v-if="data.expiration != null">Time left : {{ Math.floor((data.expiration - Math.floor(Date.now()/1000))/60) +" min "+ Math.floor(data.expiration - Math.floor(Date.now()/1000))%60 + " sec"}}</h2> 
+      <h2 v-if="data.expiration != null">Time left : {{ min_time +" min "+ sec_time + " sec"}}</h2> 
       <qrcode-vue :value=data.public_key :size="200" level="H" v-if="data.public_key != null"/>
       <h2 v-if="data.public_key != null">Wallet address : {{ data.public_key }}</h2>
       <h2 v-if="data.currency != null">Currency : {{ data.currency }}</h2>
@@ -31,12 +31,11 @@ export default {
     return{
       status: "pending",
       transaction_nb: null,
-      time_left: 3600,
-      wallet_address: "7276asajk7327",
-      currency: "SOL",
-      amount_to_send: 0.5,
-      amount_received: 0,
-      data: null
+      data: null,
+      min_time: 0,
+      sec_time: 0,
+      time: 0,
+      expiration: 0
     }
   },
   components: {
@@ -45,18 +44,20 @@ export default {
   mounted: function () {
     this.transaction_nb = this.$route.query.transaction;
     window.setInterval(() => {
-      this.time_left -= 1;
+      this.time = Date.now()/1000;
       if (this.transaction_nb != null)
       {
-        fetch("http://localhost:3000/api/monitoring?ordernb="+this.transaction_nb)
-        .then(response => response.json())
-        .then(data => (this.data = data));
-
-      }
+          fetch("http://localhost:3000/api/monitoring?ordernb="+this.transaction_nb)
+          .then(response => response.json())
+          .then(data => (this.data = data));
+      } 
+      this.expiration = this.data.expiration;
+      this.min_time = Math.floor((this.expiration - this.time)/60);
+      this.sec_time = Math.floor((this.expiration - this.time)%60);
     }, 1000)
   }
-
 }
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
