@@ -31,7 +31,6 @@
 <script>
 import QrcodeVue from 'qrcode.vue'
 import SuccessButton from '@/components/SuccessButton.vue'
-import swal from 'sweetalert2'
 import swal2 from 'sweetalert2'
 
 export default {
@@ -134,7 +133,7 @@ export default {
           // IF PAYMENT SUCCESS OPEN SMALL WINDOWS WITH PAYMENT SUCCESS MESSAGE
           if (this.data.payment_status == "success" && !this.paid){
             this.paid = true;
-            new swal(
+            swal2.fire(
               'Payment Successfull!',
               'Thanks for your purchase with Stipendium !',
               'success'
@@ -143,7 +142,7 @@ export default {
           // IF PAYMENT FAILED OPEN SMALL WINDOWS WITH PAYMENT FAILED MESSAGE
           if (this.data.payment_status == "failed" && !this.paid){
             this.paid = true;
-            new swal(
+            swal2.fire(
               'Payment Failed!',
               'Time elapsed',
               'error'
