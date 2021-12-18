@@ -32,6 +32,7 @@
 import QrcodeVue from 'qrcode.vue'
 import SuccessButton from '@/components/SuccessButton.vue'
 import swal from 'sweetalert2'
+import swal2 from 'sweetalert2'
 
 export default {
   name: 'TransactionMonitoring',
@@ -54,23 +55,64 @@ export default {
   mounted: function () {
     this.transaction_nb = this.$route.query.transaction;
 
-    //ASK USER TO ENTER TRANSACTION NUMBER
+    //ASK USER TO ENTER TRANSACTION NUMBER AND FETCH UNTIL IT FINDS TRANSACTION IF NOT FOUND DISPLAY ERROR
     if (this.transaction_nb == null)
     {
-      new swal({
-        title: 'What is your transaction number ?',
+      swal2.fire({
+        title: 'Write your transaction number :',
         input: 'text',
-        inputPlaceholder: 'example : 17272681',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
         showCancelButton: false,
-        inputValidator: (value) => {
-          return new Promise((resolve, reject) => {
-            if (value) {
-              this.transaction_nb = value;
-              resolve()
-            } else {
-              reject('You need to write your transaction number')
-            }
-          })
+        confirmButtonText: 'Find',
+        showLoaderOnConfirm: true,
+        preConfirm: (transaction_nb) => {
+          return fetch("http://localhost:3000/api/monitoring?ordernb="+transaction_nb)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(response.statusText)
+              }
+              return response.json()
+            })
+            .catch(error => {
+              swal2.showValidationMessage(
+                `Request failed: ${error}`
+              )
+            })
+        },
+        allowOutsideClick: () => !swal2.isLoading()
+      }).then((data) => {
+        console.log(data);
+        if (data.value) {
+          this.transaction_nb = data.value.transaction_nb;
+          this.data = data.value;
+        }
+      })
+    }
+    // SHOW A LOADER UNTIL TRANSACTION IS FOUND IF NOT FOUND DISPLAY ERROR
+    if (this.transaction_nb != null) {
+      swal2.fire({
+        title: 'We are looking for your transaction number',
+        showConfirmButton: false,
+        didOpen: () => {
+          swal2.showLoading();
+          return fetch("http://localhost:3000/api/monitoring?ordernb="+this.transaction_nb)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(response.statusText)
+              }
+              return response.json()
+            })
+            .catch(error => {
+              swal2.showValidationMessage(
+                `Request failed: ${error}`
+              )
+            }).then(data => {
+              this.data = data;
+              this.transaction_nb = data.transaction_nb;
+              swal2.close();
+              })
         }
       })
     }
