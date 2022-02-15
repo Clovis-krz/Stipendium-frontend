@@ -23,6 +23,8 @@
     <button @click="update_account('store_name', data.account.store_name)">Update</button>
     <p></p>
     <button @click="api_key_reset()">API KEY RESET</button>
+    <p></p>
+    <button @click="delete_account()">Delete Account</button>
     </lol>
   </div>
 </template>
@@ -164,6 +166,67 @@ export default {
                 swalWithBootstrapButtons.fire(
                 'Cancelled',
                 'Your Existing API Key has not been removed',
+                'error'
+                )
+            }
+            })
+      },
+      delete_account(){
+          const swalWithBootstrapButtons = swal2.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+            })
+
+            swalWithBootstrapButtons.fire({
+            title: 'You are deleting your account',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+            }).then((result) => {
+            if (result.isConfirmed) {
+                swal2.fire({
+                title: 'Enter your current password to confirm',
+                input: 'password',
+                inputLabel: 'Password',
+                inputPlaceholder: 'Enter your password',
+                inputAttributes: {
+                    maxlength: 10,
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                }
+                }).then(pass => {
+                    fetch("http://localhost:3000/api/delete-account?token="+this.token+"&password="+pass.value)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.account_deletion == "success") {
+                            swalWithBootstrapButtons.fire(
+                            'Account deleted',
+                            'Your account has been deleted, reload the page',
+                            'success'
+                        )
+                        }
+                        else{
+                            swalWithBootstrapButtons.fire(
+                            'Cancelled',
+                            'Your current password is wrong, nothing has been changed',
+                            'error'
+                            )
+                        }
+                    })
+                })
+            } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === swal2.DismissReason.cancel
+            ) {
+                swalWithBootstrapButtons.fire(
+                'Cancelled',
+                'Your account is safe',
                 'error'
                 )
             }
