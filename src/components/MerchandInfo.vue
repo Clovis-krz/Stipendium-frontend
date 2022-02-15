@@ -3,7 +3,7 @@
     <h2>Here are your account info :</h2>
     <lol v-if="data != null">
     Email:
-    <input v-model="data.account.merchand_email" placeholder={{data.account.merchand_email}} />
+    <input v-model="data.account.merchand_email" placeholder="Your email" />
     <button @click="update_account('merchand_email', data.account.merchand_email)">Update</button>
     <p></p>
     Password:
@@ -11,16 +11,20 @@
     <button @click="update_password()">Update</button>
     <p></p>
     Lastname:
-    <input v-model="data.account.merchand_lastname" placeholder={{data.account.merchand_lastname}} />
+    <input v-model="data.account.merchand_lastname" placeholder="lastname" />
     <button @click="update_account('merchand_lastname', data.account.merchand_lastname)">Update</button>
     <p></p>
     Firstname:
-    <input v-model="data.account.merchand_firstname" placeholder={{data.account.merchand_firstname}} />
+    <input v-model="data.account.merchand_firstname" placeholder="firstname" />
     <button @click="update_account('merchand_firstname', data.account.merchand_firstname)">Update</button>
     <p></p>
     Store Name:
-    <input v-model="data.account.store_name" placeholder={{data.account.store_name}} />
+    <input v-model="data.account.store_name" placeholder="example: amazon.com" />
     <button @click="update_account('store_name', data.account.store_name)">Update</button>
+    <p></p>
+    Wallet Public Address :
+    <input v-model="data.account.public_key" placeholder="Solana public address" />
+    <button @click="update_wallet()">Update</button>
     <p></p>
     <button @click="api_key_reset()">API KEY RESET</button>
     <p></p>
@@ -39,6 +43,7 @@ export default {
       token: null,
       data: null,
       newpass: null,
+      newwallet: null,
     }
   },
   components: {
@@ -171,6 +176,69 @@ export default {
             }
             })
       },
+
+      update_wallet(){
+          const swalWithBootstrapButtons = swal2.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+            })
+
+            swalWithBootstrapButtons.fire({
+            title: 'You are changing your wallet public address',
+            text: "When you will have changed it, all new transactions funds will be redirected to this new address",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, change it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+            }).then((result) => {
+            if (result.isConfirmed) {
+                swal2.fire({
+                title: 'Enter your current password to confirm',
+                input: 'password',
+                inputLabel: 'Password',
+                inputPlaceholder: 'Enter your password',
+                inputAttributes: {
+                    maxlength: 10,
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                }
+                }).then(pass => {
+                    fetch("http://localhost:3000/api/update-wallet?token="+this.token+"&password="+pass.value+"&wallet="+this.data.account.public_key)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.wallet_update == "success") {
+                            swalWithBootstrapButtons.fire(
+                            'Wallet public address changed',
+                            'All new transaction funds will be redirected to this address, reload the page',
+                            'success'
+                        )
+                        }
+                        else{
+                            swalWithBootstrapButtons.fire(
+                            'Cancelled',
+                            'Your current password is wrong, nothing has been changed',
+                            'error'
+                            )
+                        }
+                    })
+                })
+            } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === swal2.DismissReason.cancel
+            ) {
+                swalWithBootstrapButtons.fire(
+                'Cancelled',
+                'Your wallet public address is safe',
+                'error'
+                )
+            }
+            })
+      },
+
       delete_account(){
           const swalWithBootstrapButtons = swal2.mixin({
             customClass: {
@@ -259,6 +327,7 @@ export default {
                     fetch("http://localhost:3000/api/display-account?token="+this.token)
                         .then(response => response.json())
                         .then(data => (this.data = data))
+                        .then( () => {console.log(this.data);})
                 });
         })
     })
