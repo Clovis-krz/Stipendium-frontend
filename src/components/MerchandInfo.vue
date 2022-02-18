@@ -1,7 +1,7 @@
 <template>
   <div class="hello">
+    <login v-if="data != null">
     <h2>Here are your account info :</h2>
-    <lol v-if="data != null">
     Email:
     <input v-model="data.account.merchand_email" placeholder="Your email" />
     <button @click="update_account('merchand_email', data.account.merchand_email)">Update</button>
@@ -29,7 +29,11 @@
     <button @click="api_key_reset()">API KEY RESET</button>
     <p></p>
     <button @click="delete_account()">Delete Account</button>
-    </lol>
+    </login>
+    <not-connected v-if="data == null">
+        <button @click="login()">Log In</button> |
+        <button @click="register()">Register</button>
+    </not-connected>
   </div>
 </template>
 
@@ -299,38 +303,126 @@ export default {
                 )
             }
             })
+      },
+
+      register(){
+          const swalWithBootstrapButtons = swal2.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+          swal2.fire({
+            title: 'To register, please answer these questions',
+            input: 'email',
+            inputLabel: 'Your email address',
+            inputPlaceholder: 'Enter your email address'
+            }).then(email => {
+                swal2.fire({
+                    title: 'Enter your password',
+                    input: 'password',
+                    inputLabel: 'Password',
+                    inputPlaceholder: 'Enter your password',
+                    inputAttributes: {
+                        maxlength: 10,
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    }
+                    }).then(password => {
+                        swal2.fire({
+                            title: 'lastname',
+                            input: 'textarea',
+                            inputLabel: 'Your lastname',
+                            inputPlaceholder: 'Enter your lastname'
+                            }).then(lastname => {
+                                swal2.fire({
+                                    title: 'firstname',
+                                    input: 'textarea',
+                                    inputLabel: 'Your firstname',
+                                    inputPlaceholder: 'Enter your firstname'
+                                    }).then(firstname => {
+                                        swal2.fire({
+                                            title: 'store name',
+                                            input: 'textarea',
+                                            inputLabel: 'Your Store Name',
+                                            inputPlaceholder: 'Enter your Store Name'
+                                            }).then(store_name => {
+                                                fetch("http://localhost:3000/api/create-account?email="+email.value+"&password="+password.value+"&firstname="+firstname.value+"&lastname="+lastname.value+"&store_name="+store_name.value)
+                                                    .then(response => response.json())
+                                                    .then(answer => {
+                                                        if (answer.account_creation == "success") {
+                                                            swalWithBootstrapButtons.fire(
+                                                                'Account created',
+                                                                'Your account has been created, reload the page',
+                                                                'success'
+                                                            )
+                                                        }
+                                                        else{
+                                                            swalWithBootstrapButtons.fire(
+                                                                'Error',
+                                                                'An error has occured, please check that you dont already have an account',
+                                                                'error'
+                                                            )
+                                                        }
+                                                    })
+                                            })
+                                    })
+                            })
+                    })
+            })
+      },
+
+      login(){
+          const swalWithBootstrapButtons = swal2.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+            })
+          swal2.fire({
+                title: 'Log In',
+                input: 'email',
+                inputLabel: 'Your email address',
+                inputPlaceholder: 'Enter your email address'
+            }).then(email => {
+                swal2.fire({
+                    title: 'Enter your password',
+                    input: 'password',
+                    inputLabel: 'Password',
+                    inputPlaceholder: 'Enter your password',
+                    inputAttributes: {
+                        maxlength: 10,
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    }
+                }).then(password => {
+                    fetch("http://localhost:3000/api/login?email="+email.value+"&password="+password.value)
+                        .then(response => response.json())
+                        .then(answer => {
+                            if (answer.login_status == "success") {
+                                this.token = answer.token;
+                                fetch("http://localhost:3000/api/display-account?token="+this.token)
+                                    .then(response => response.json())
+                                    .then(data => {this.data = data;})
+                            }
+                             else{
+                                swalWithBootstrapButtons.fire(
+                                    'Error',
+                                    'Email/password combination wrong, please check that you have an account',
+                                    'error'
+                                )
+                            }
+                        })
+                })
+            })
       }
+
   },
   mounted: function () {
       
-    swal2.fire({
-        title: 'Input email address',
-        input: 'email',
-        inputLabel: 'Your email address',
-        inputPlaceholder: 'Enter your email address'
-    }).then(email => {
-        swal2.fire({
-            title: 'Enter your password',
-            input: 'password',
-            inputLabel: 'Password',
-            inputPlaceholder: 'Enter your password',
-            inputAttributes: {
-                maxlength: 10,
-                autocapitalize: 'off',
-                autocorrect: 'off'
-            }
-        }).then(password => {
-            fetch("http://localhost:3000/api/login?email="+email.value+"&password="+password.value)
-                .then(response => response.json())
-                .then(data => (this.token = data.token))
-                .then(() => {
-                    fetch("http://localhost:3000/api/display-account?token="+this.token)
-                        .then(response => response.json())
-                        .then(data => (this.data = data))
-                        .then( () => {console.log(this.data);})
-                });
-        })
-    })
+    
 }
 }
 
