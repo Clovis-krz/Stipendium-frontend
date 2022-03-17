@@ -3,6 +3,7 @@
 
     <info-transaction v-if="transaction_nb != null && status == 'pending'">
       <br><h2>Transaction number : {{ transaction_nb }}</h2>
+      <h2 v-if="data.store_name != null">Store name : {{ data.store_name }}</h2>
       <h2 v-if="data.expiration != null">Time left : {{ min_time +" min "+ sec_time + " sec"}}</h2> 
       <qrcode-vue :value=data.public_key :size="200" level="H" v-if="data.public_key != null"/>
       <h2 v-if="data.public_key != null">Wallet address : {{ data.public_key }}</h2>
@@ -67,7 +68,7 @@ export default {
         confirmButtonText: 'Find',
         showLoaderOnConfirm: true,
         preConfirm: (transaction_nb) => {
-          return fetch("http://localhost:3000/api/monitoring?ordernb="+transaction_nb)
+          return fetch("http://backend.sc2aips9849.universe.wf/api/monitoring?ordernb="+transaction_nb)
             .then(response => {
               if (!response.ok) {
                 throw new Error(response.statusText)
@@ -96,7 +97,7 @@ export default {
         showConfirmButton: false,
         didOpen: () => {
           swal2.showLoading();
-          return fetch("http://localhost:3000/api/monitoring?ordernb="+this.transaction_nb)
+          return fetch("http://backend.sc2aips9849.universe.wf/api/monitoring?ordernb="+this.transaction_nb)
             .then(response => {
               if (!response.ok) {
                 throw new Error(response.statusText)
@@ -121,7 +122,7 @@ export default {
       this.time = Date.now()/1000;
       if (this.transaction_nb != null)
       {
-          fetch("http://localhost:3000/api/monitoring?ordernb="+this.transaction_nb)
+          fetch("http://backend.sc2aips9849.universe.wf/api/monitoring?ordernb="+this.transaction_nb)
           .then(response => response.json())
           .then(data => (this.data = data));
 

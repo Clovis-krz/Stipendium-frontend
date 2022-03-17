@@ -54,7 +54,7 @@ export default {
   },
   methods: {
       update_account(element, value){
-        fetch("http://localhost:3000/api/update-merchand-info?token="+this.token+"&element="+element+"&value="+value)
+        fetch("http://backend.sc2aips9849.universe.wf/api/update-merchand-info?token="+this.token+"&element="+element+"&value="+value)
             .then(response => response.json())
             .then(data => (this.updated_notif(data.info_update)))
       },
@@ -89,7 +89,7 @@ export default {
                     autocorrect: 'off'
                 }
                 }).then(pass => {
-                    fetch("http://localhost:3000/api/update-password?token="+this.token+"&password="+pass.value+"&new_password="+this.newpass)
+                    fetch("http://backend.sc2aips9849.universe.wf/api/update-password?token="+this.token+"&password="+pass.value+"&new_password="+this.newpass)
                     .then(response => response.json())
                     .then(data => {
                         if (data.password_update == "success") {
@@ -159,7 +159,7 @@ export default {
             reverseButtons: true
             }).then((result) => {
             if (result.isConfirmed) {
-                fetch("http://localhost:3000/api/generate-api?token="+this.token)
+                fetch("http://backend.sc2aips9849.universe.wf/api/generate-api?token="+this.token)
                     .then(response => response.json())
                     .then(data => {
                         swalWithBootstrapButtons.fire(
@@ -211,7 +211,7 @@ export default {
                     autocorrect: 'off'
                 }
                 }).then(pass => {
-                    fetch("http://localhost:3000/api/update-wallet?token="+this.token+"&password="+pass.value+"&wallet="+this.data.account.public_key)
+                    fetch("http://backend.sc2aips9849.universe.wf/api/update-wallet?token="+this.token+"&password="+pass.value+"&wallet="+this.data.account.public_key)
                     .then(response => response.json())
                     .then(data => {
                         if (data.wallet_update == "success") {
@@ -273,7 +273,7 @@ export default {
                     autocorrect: 'off'
                 }
                 }).then(pass => {
-                    fetch("http://localhost:3000/api/delete-account?token="+this.token+"&password="+pass.value)
+                    fetch("http://backend.sc2aips9849.universe.wf/api/delete-account?token="+this.token+"&password="+pass.value)
                     .then(response => response.json())
                     .then(data => {
                         if (data.account_deletion == "success") {
@@ -348,7 +348,7 @@ export default {
                                             inputLabel: 'Your Store Name',
                                             inputPlaceholder: 'Enter your Store Name'
                                             }).then(store_name => {
-                                                fetch("http://localhost:3000/api/create-account?email="+email.value+"&password="+password.value+"&firstname="+firstname.value+"&lastname="+lastname.value+"&store_name="+store_name.value)
+                                                fetch("http://backend.sc2aips9849.universe.wf/api/create-account?email="+email.value+"&password="+password.value+"&firstname="+firstname.value+"&lastname="+lastname.value+"&store_name="+store_name.value)
                                                     .then(response => response.json())
                                                     .then(answer => {
                                                         if (answer.account_creation == "success") {
@@ -398,12 +398,12 @@ export default {
                         autocorrect: 'off'
                     }
                 }).then(password => {
-                    fetch("http://localhost:3000/api/login?email="+email.value+"&password="+password.value)
+                    fetch("http://backend.sc2aips9849.universe.wf/api/login?email="+email.value+"&password="+password.value)
                         .then(response => response.json())
                         .then(answer => {
                             if (answer.login_status == "success") {
                                 this.token = answer.token;
-                                fetch("http://localhost:3000/api/display-account?token="+this.token)
+                                fetch("http://backend.sc2aips9849.universe.wf/api/display-account?token="+this.token)
                                     .then(response => response.json())
                                     .then(data => {this.data = data;})
                             }
