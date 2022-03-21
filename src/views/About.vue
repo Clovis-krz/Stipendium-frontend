@@ -5,10 +5,11 @@
     <div style="text-align: center;">
       <div style="display: inline-block; text-align: left;">
         <p>
-          Stipendium is a payment module on the solana blockchain. <br>
+          Stipendium is a payment module on the solana blockchain. <br><br>
 
-          Go on the merchand page and create your account, write your solana wallet public address,
-          then generate your API keys and keep it safe. <br>
+          Go on the merchand page and create your account, then log-in, go in Account information <br>
+          and write your solana wallet public address.
+          Generate your API keys and keep it safe. <br><br>
 
           Once you have your API keys and your wallet configured, go on your website server where your <br>
           function pay is triggered. To create a transaction on stipendium make an http GET Request at this link :
