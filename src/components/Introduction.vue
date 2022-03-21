@@ -1,8 +1,9 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <br>
     <p>
-      Stipendium is the best payment module on the solana blockchain.
+      Stipendium is the best payment module on the solana blockchain.<br>
       Are you a merchand ? Please <button onclick="window.location.href='/merchand'">Log In / Register</button>
     </p>
   </div>

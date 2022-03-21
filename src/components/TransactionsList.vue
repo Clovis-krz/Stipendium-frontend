@@ -1,7 +1,8 @@
 <template>
   <div class="hello">
     <login v-if="this.data != null">
-        Transactions :
+        <br><br>
+        <h4>History of Transactions :</h4>
         <div class="container">
             <table class="table table-striped table-bordered">
                 <thead>
@@ -38,7 +39,6 @@
 </template>
 
 <script>
-import swal2 from 'sweetalert2'
 
 export default {
   name: 'TransactionsList',
@@ -67,7 +67,6 @@ export default {
   },
   mounted: function () {
       window.setInterval(() => {
-        console.log(this.token);
         fetch("http://backend.sc2aips9849.universe.wf/api/transactions?token="+this.token)
             .then(response => response.json())
             .then(data => {
@@ -77,7 +76,5 @@ export default {
 },
 
 }
-
-
 
 </script>

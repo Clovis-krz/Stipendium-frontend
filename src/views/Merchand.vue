@@ -1,6 +1,6 @@
 <template>
   <div class="merchand">
-    <h1>Merchand Account Management</h1>
+    <h1>Merchand Account Management</h1><br>
     <connected v-if="this.token != null">
       <button @click="show_account()">Account Information</button> |
       <button @click="show_transactions()">History of transactions</button>

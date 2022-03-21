@@ -1,7 +1,8 @@
 <template>
   <div class="hello">
     <login v-if="this.data != null">
-    <h2>Here are your account info :</h2>
+    <br>
+    <h4>Here are your account info :</h4>
     Email:
     <input v-model="data.account.merchand_email" placeholder="Your email" />
     <button @click="update_account('merchand_email', data.account.merchand_email)">Update</button>
